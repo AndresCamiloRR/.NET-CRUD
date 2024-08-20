@@ -1,0 +1,26 @@
+GET https://webapplication120240820141630.azurewebsites.net/
+###
+GET https://webapplication120240820141630.azurewebsites.net/1
+
+###
+POST https://webapplication120240820141630.azurewebsites.net/games
+Content-Type: application/json
+
+{
+    "name": "Minecraft",
+    "genreId": 1,
+    "price": 19.99,
+    "releaseDate": "2011-11-18"
+}
+###
+PUT  https://webapplication120240820141630.azurewebsites.net/1
+Content-Type: application/json
+
+{
+    "name": "Sonic Heroes",
+    "genreId": 2,
+    "price": 19.99,
+    "releaseDate": "2011-11-18"
+}
+###
+DELETE https://webapplication120240820141630.azurewebsites.net/1

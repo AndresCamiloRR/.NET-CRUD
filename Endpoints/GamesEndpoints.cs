@@ -10,47 +10,47 @@ public static class GamesEndpoints
 {
     const string GetGameEndpointName = "GetGame";
 
-    private static readonly List<GameDto> games = [
-        new(1, "Crash Bandicoot", "Adventure", 100.00M, new DateOnly(2022, 9, 27)),
-        new(2, "Sonic Heroes", "Adventure", 100.00M, new DateOnly(2024, 9, 27))
-    ];
+    // Example list of games (for illustration purposes)
+    private static readonly List<GameDto> games = new List<GameDto> 
+    {
+        new GameDto(1, "Crash Bandicoot", "Adventure", 100.00M, new DateOnly(2022, 9, 27)),
+        new GameDto(2, "Sonic Heroes", "Adventure", 100.00M, new DateOnly(2024, 9, 27))
+    };
 
-    public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app){
-
+    public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app)
+    {
         var group = app.MapGroup("games").WithParameterValidation();
 
-        //GET
+        // GET: Retrieve all games
         group.MapGet("/", (GameStoreContext dbContext) => dbContext.Games.ToList().toDetailDto());
 
+        // GET: Retrieve a game by ID
         group.MapGet("/{id}", (int id, GameStoreContext dbContext) => 
         {
             Game? game = dbContext.Games.Find(id);
-            
             return game is null ? Results.NotFound() : Results.Ok(game.toDetailDto());
-        }
-        )
-            .WithName(GetGameEndpointName);
+        })
+        .WithName(GetGameEndpointName);
 
-        //POST
+        // POST: Create a new game
         group.MapPost("/", (CreateGameDto newGame, GameStoreContext dbContext) => 
-        {   
-
+        {
             Game game = newGame.toEntity();
-            
             game.Genre = dbContext.Genre.Find(newGame.GenreId);
 
             dbContext.Add(game);
             dbContext.SaveChanges();
 
             return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id}, game.toDto());
-        }
-        );
-        //PUT
+        });
+
+        // PUT: Update an existing game by ID
         group.MapPut("/{id}", (int id, CreateGameDto newGame, GameStoreContext dbContext) => 
         {
             Game? toUpdate = dbContext.Games.Find(id);
             
-            if(toUpdate is null){
+            if (toUpdate is null)
+            {
                 return Results.NotFound();
             }
 
@@ -62,25 +62,22 @@ public static class GamesEndpoints
             dbContext.SaveChanges();
 
             return Results.NoContent();
-        }
-        );
-        //DELETE
+        });
+
+        // DELETE: Remove a game by ID
         group.MapDelete("/{id}", (int id, GameStoreContext dbContext) => 
         {
-
             Game? game = dbContext.Games.Find(id);
 
-            if(game is not null){
+            if (game is not null)
+            {
                 dbContext.Games.Remove(game);
+                dbContext.SaveChanges();
             }
 
-            dbContext.SaveChanges();
-
             return Results.NoContent();
-        }
-        );
+        });
 
         return group;
     }
-
 }

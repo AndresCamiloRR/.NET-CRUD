@@ -1,5 +1,7 @@
 GET http://localhost:5290/games/
 ###
+GET https://net-crud-andrescamilorrs-projects.vercel.app/games/
+###
 GET http://localhost:5290/games/1
 ###
 POST http://localhost:5290/games/
